@@ -1,0 +1,128 @@
+CREATE DATABASE bookstore;
+
+USE bookstore;
+
+CREATE TABLE store (
+	storeID		CHAR(5) NOT NULL,
+	openTime	TIME,
+	closeTime	TIME,
+	phoneNumber	CHAR(10),
+    Address		VARCHAR(200),
+	CONSTRAINT store_storeID_pk PRIMARY KEY (storeID));
+    
+    
+CREATE TABLE employee (
+	ssn 		CHAR(10) NOT NULL,
+	FName		VARCHAR(20) NOT NULL,
+	LName		VARCHAR(20) NOT NULL,
+	Email			VARCHAR(50),
+	Date_of_birth		DATE,
+	storeID			CHAR(5) NOT NULL,
+	Date_of_hire		DATE,
+	phoneNumber		CHAR(10),
+    CONSTRAINT employee_ssn_pk PRIMARY KEY (ssn),
+CONSTRAINT employee_storeID_fk FOREIGN KEY (storeID) REFERENCES store (storeID));
+
+
+CREATE TABLE employee_positions (
+	ssn 		CHAR(10) NOT NULL,
+    position    VARCHAR(20),
+CONSTRAINT employee_position_ssn_fk FOREIGN KEY (ssn) REFERENCES employee (ssn));
+
+CREATE TABLE cafe(
+	cafeID		CHAR(5) NOT NULL,
+	storeID		CHAR(5) NOT NULL,
+	openTime	TIME,
+	closeTime	TIME,
+	phoneNumber	CHAR(10),
+	CONSTRAINT cafe_cafeID_pk PRIMARY KEY (cafeID),
+CONSTRAINT cafe_storeID_fk FOREIGN KEY (storeID) REFERENCES store (storeID));
+
+
+CREATE TABLE book(
+	ISBN		VARCHAR(13) NOT NULL,
+	Price		VARCHAR(5),
+	Publisher	VARCHAR(25),
+	Customer_rating	CHAR(3),
+	Title		VARCHAR(100),
+	Pages		VARCHAR(15),
+	Publication_date	DATE,
+	Sales_rank	VARCHAR(5),
+	CONSTRAINT book_ISBN_pk PRIMARY KEY (ISBN));
+
+
+CREATE TABLE author(
+	authorID		CHAR(6) NOT NULL,
+	authorFName	VARCHAR(50) NOT NULL,
+	authorLName	VARCHAR(50) NOT NULL,
+	CONSTRAINT author_authorID_pk PRIMARY KEY (authorID));
+    
+
+CREATE TABLE book_author(
+	ISBN		VARCHAR(13) NOT NULL,
+	authorID		CHAR(6) NOT NULL,
+    Category		VARCHAR(15),
+CONSTRAINT book_author_ISBN_fk FOREIGN KEY (ISBN) REFERENCES book (ISBN),
+CONSTRAINT book_author_authorID_fk FOREIGN KEY (authorID) REFERENCES author (authorID));
+
+
+CREATE TABLE book_stock(
+	ISBN		VARCHAR(13) NOT NULL,
+	Quantity    VARCHAR(10),
+    storeID		CHAR(5) NOT NULL,
+CONSTRAINT book_stock_ISBN_fk FOREIGN KEY (ISBN) REFERENCES book (ISBN),
+CONSTRAINT book_stock_storeID_fk FOREIGN KEY (storeID) REFERENCES store (storeID));
+
+
+CREATE TABLE cafe_item(
+	Item_ID		CHAR(5) NOT NULL,
+	name		VARCHAR(20),
+    Price		VARCHAR(5),
+    Category		VARCHAR(15),
+	CONSTRAINT cafe_item_Item_ID_pk PRIMARY KEY (item_ID));
+    
+
+CREATE TABLE cafe_stock(
+	Item_ID		CHAR(5) NOT NULL,
+	Quantity    VARCHAR(10),
+    cafeID		CHAR(5) NOT NULL,
+CONSTRAINT cafe_stock_Item_ID_fk FOREIGN KEY (Item_ID) REFERENCES cafe_item (Item_ID),
+CONSTRAINT cafe_stock_cafeID_fk FOREIGN KEY (cafeID) REFERENCES cafe (cafeID));
+
+    
+CREATE TABLE book_sale(
+	saleID			CHAR(8) NOT NULL,
+	storeID			CHAR(5) NOT NULL,
+	discount_percent		VARCHAR(2),
+	startDate			DATE,
+	endDate			DATE,
+    ISBN		VARCHAR(13) NOT NULL,
+    Quantity    VARCHAR(10),
+	CONSTRAINT sale_saleID_pk PRIMARY KEY (saleID),
+CONSTRAINT sale_ISBN_fk FOREIGN KEY (ISBN) REFERENCES book (ISBN));
+
+
+CREATE TABLE cafe_sale(
+	saleID			CHAR(8) NOT NULL,
+    Quantity		VARCHAR(5),
+	Date			DATE,
+    Item_ID		CHAR(5) NOT NULL,
+    discount_percent		VARCHAR(2),
+	CONSTRAINT sale_saleID_pk PRIMARY KEY (saleID),
+CONSTRAINT sale_Item_ID_fk FOREIGN KEY (Item_ID) REFERENCES cafe_item (Item_ID));
+
+
+CREATE TABLE shift(
+	Shift_number	CHAR(4) NOT NULL,
+	storeID		    CHAR(5) NOT NULL,
+	CONSTRAINT shift_number_pk PRIMARY KEY (shift_number),
+CONSTRAINT shift_storeID_fk FOREIGN KEY (storeID) REFERENCES store (storeID));
+
+
+CREATE TABLE shift_schedule(
+	Shift_number	CHAR(4) NOT NULL,
+    ssn 		CHAR(10) NOT NULL,
+	position		VARCHAR(20),
+	Date		    DATETIME,
+CONSTRAINT shift_schedule_Shift_number_fk FOREIGN KEY (Shift_number) REFERENCES shift (Shift_number),
+CONSTRAINT shift_schedule_ssn_fk FOREIGN KEY (ssn) REFERENCES employee (ssn));
